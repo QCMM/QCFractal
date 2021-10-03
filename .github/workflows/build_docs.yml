@@ -1,0 +1,58 @@
+name: Build and Deploy Docs
+
+on:
+  push:
+    branches:
+      - test_docs
+  pull_request:
+    branches:
+      - test_docs
+
+jobs:
+  deploy_docs:
+    runs-on: ubuntu-latest
+        
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install pandoc
+        run: sudo apt install -y pandoc
+
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+
+      - name: Install package
+        shell: bash -l {0}
+        run: |
+          python -m pip install .[docs]
+
+      - name: Build QCFractal Documentation
+        run: |
+          cd docs/qcfractal
+          make html
+
+      - name: Build QCPortal Documentation
+        run: |
+          cd docs/qcportal
+          make html
+
+      - name: Deploy QCFractal Documentation
+        uses: JamesIves/github-pages-deploy-action@4.1.1
+        if: github.event_name == 'push'
+        with:
+          token: ${{ secrets.QCABOT_PAT }}
+          repository-name: MolSSI/QCArchiveWebsite
+          branch: master
+          target-folder: static_subprojects/qcfractal
+          folder: docs/qcfractal/build/html
+
+      - name: Deploy QCPortal Documentation
+        uses: JamesIves/github-pages-deploy-action@4.1.1
+        if: github.event_name == 'push'
+        with:
+          token: ${{ secrets.QCABOT_PAT }}
+          repository-name: MolSSI/QCArchiveWebsite
+          branch: master
+          target-folder: static_subprojects/qcportal
+          folder: docs/qcportal/build/html
