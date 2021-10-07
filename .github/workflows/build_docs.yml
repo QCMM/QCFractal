@@ -29,12 +29,7 @@ jobs:
 
       - name: Build QCFractal Documentation
         run: |
-          cd docs/qcfractal
-          make html
-
-      - name: Build QCPortal Documentation
-        run: |
-          cd docs/qcportal
+          cd docs
           make html
 
       - name: Deploy QCFractal Documentation
@@ -43,16 +38,6 @@ jobs:
         with:
           token: ${{ secrets.QCABOT_PAT }}
           repository-name: MolSSI/QCArchiveWebsite
-          branch: master
-          target-folder: static_subprojects/qcfractal
-          folder: docs/qcfractal/build/html
-
-      - name: Deploy QCPortal Documentation
-        uses: JamesIves/github-pages-deploy-action@4.1.1
-        if: github.event_name == 'push'
-        with:
-          token: ${{ secrets.QCABOT_PAT }}
-          repository-name: MolSSI/QCArchiveWebsite
-          branch: master
-          target-folder: static_subprojects/qcportal
-          folder: docs/qcportal/build/html
+          branch: gh-pages
+          target-folder: docs/qcfractal
+          folder: docs/build/html
